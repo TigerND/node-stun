@@ -18,7 +18,8 @@
   "author": "Moto Ishizawa <summerwind.jp@gmail.com> (http://summerwind.jp)",
   "license": "MIT",
   "dependencies": {
-    "ip": "*"
+    "ip": "*",
+    "bitwise-xor": "*"
   },
   "devDependencies": {
     "nodeunit": "*"
