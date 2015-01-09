@@ -8,12 +8,12 @@ var peer = [];
 //var host = 'stun.l.google.com';
 
 // STUN Server (by PlexRay)
-//var port = 3478;
-//var host = 'contabo-lnx-0002.plexrayinc.com';
-
-// STUN Server (by PlexRay)
 var port = 3478;
-var host = '2a02:c200:0:10:2:3:3407:1';
+//var host = 'stun.plexrayinc.com'; // IPv4 & IPv6
+//var host = 'stun4.plexrayinc.com'; // IPv4 Only
+var host = 'stun6.plexrayinc.com'; // IPv6 Only
+//var host = '79.143.181.186'; // IPv4 Address
+//var host = '2a02:c200:0:10:2:3:3407:1'; // IPv6 Address
 
 // Event Handler
 var onRequest = function(){
