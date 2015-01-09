@@ -16,8 +16,12 @@ var host = 'stun6.plexrayinc.com'; // IPv6 Only
 //var host = '2a02:c200:0:10:2:3:3407:1'; // IPv6 Address
 
 // Event Handler
-var onRequest = function(){
-    console.log('Sending STUN packet');
+var onRequest = function(err, bytes) {
+    if (err) {
+        console.log('Failed to send a STUN packet');
+    } else {
+        console.log('Sent a STUN packet (size is ' + bytes + ')');
+    }
 };
 
 var onError = function(err) {
