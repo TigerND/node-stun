@@ -36,7 +36,7 @@ var client1 = stun.connect(port, host, function() {
             console.log('Client1 Received STUN packet:', packet);
             
             // Save NAT Address
-            peer.push(packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]);
+            peer.push(packet.address);
         
             // Sending STUN Packet
             client2.request(onRequest);
@@ -47,7 +47,7 @@ var client1 = stun.connect(port, host, function() {
             console.log('Client2 Received STUN packet:', packet);
         
             // Save NAT Address
-            peer.push(packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]);
+            peer.push(packet.address);
         
             // Sending UDP message
             var msg = new Buffer("Hello!");

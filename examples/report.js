@@ -35,7 +35,7 @@ var client1 = stun.connect(port, host, function() {
     client1.on('response', function(packet){
         console.log('Received STUN packet:', packet);
         
-        var addr = packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]
+        var addr = packet.address
         
         console.log('NAT Address:', addr)
         peer.push(addr);
