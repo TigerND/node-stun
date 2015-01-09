@@ -12,8 +12,12 @@ var peer = [];
 //var host = 'stun.l.google.com';
 
 // STUN Server (by PlexRay)
+//var port = 3478;
+//var host = 'contabo-lnx-0002.plexrayinc.com';
+
+// STUN Server (by PlexRay)
 var port = 3478;
-var host = '104.219.54.217'; //'2001:470:1f0e:d1d::2';
+var host = '2a02:c200:0:10:2:3:3407:1';
 
 var onRequest = function(){
     console.log('Sending STUN packet');
@@ -23,19 +27,23 @@ var onError = function(err) {
     console.log('Error:', err);
 };
 
-// Create STUN Client
-var client1 = stun.connect(port, host);
-client1.on('error', onError);
+// Create STUN Client 
+var client1 = stun.connect(port, host, function() {
+    client1.on('error', onError);
 
-// Client1: STUN Response event handler
-client1.on('response', function(packet){
-    console.log('Received STUN packet:', packet);
+    // Client1: STUN Response event handler
+    client1.on('response', function(packet){
+        console.log('Received STUN packet:', packet);
+        
+        var addr = packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]
+        
+        console.log('NAT Address:', addr)
+        peer.push(addr);
+    });
     
-    var addr = packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]
-    
-    console.log('NAT Address:', addr)
-    peer.push(addr);
-});
+    // Sending STUN request
+    client1.request(onRequest);
+})
 
-// Sending STUN request
-client1.request(onRequest);
+var dummy = dgram.createSocket('udp4')
+dummy.bind(1234);

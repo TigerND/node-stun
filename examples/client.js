@@ -8,8 +8,12 @@ var peer = [];
 //var host = 'stun.l.google.com';
 
 // STUN Server (by PlexRay)
+//var port = 3478;
+//var host = 'contabo-lnx-0002.plexrayinc.com';
+
+// STUN Server (by PlexRay)
 var port = 3478;
-var host = '2001:470:1f0e:d1d::2';
+var host = '2a02:c200:0:10:2:3:3407:1';
 
 // Event Handler
 var onRequest = function(){
@@ -21,54 +25,59 @@ var onError = function(err) {
 };
 
 // Create STUN Client
-var client1 = stun.connect(port, host);
-client1.on('error', onError);
+var client1 = stun.connect(port, host, function() { 
+    client1.on('error', onError);
 
-var client2 = stun.connect(port, host);
-client2.on('error', onError);
+    var client2 = stun.connect(port, host, function() { 
+        client2.on('error', onError);
 
-// Client1: STUN Response event handler
-client1.on('response', function(packet){
-    console.log('Received STUN packet:', packet);
-    
-    // Save NAT Address
-    peer.push(packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]);
-
-    // Sending STUN Packet
-    client2.request(onRequest);
+        // Client1: STUN Response event handler
+        client1.on('response', function(packet){
+            console.log('Client1 Received STUN packet:', packet);
+            
+            // Save NAT Address
+            peer.push(packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]);
+        
+            // Sending STUN Packet
+            client2.request(onRequest);
+        });
+        
+        // Client2: STUN Response event handler
+        client2.on('response', function(packet){
+            console.log('Client2 Received STUN packet:', packet);
+        
+            // Save NAT Address
+            peer.push(packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]);
+        
+            // Sending UDP message
+            var msg = new Buffer("Hello!");
+            for (var i=0; i<10; i++) {
+                client1.send(msg, 0, msg.length, peer[1].port, peer[1].address);
+                client2.send(msg, 0, msg.length, peer[0].port, peer[0].address);
+            }
+        
+            // Client close after 2sec
+            setTimeout(function(){
+                client1.close();
+                client2.close();
+                console.log('done'); 
+            }, 2000);
+        });
+        
+        // Client1: UDP Message event handler
+        client1.on('message', function(msg, rinfo){
+            console.log('Client1 Received UDP message:', msg);
+        });
+        
+        // Client2: UDP Message event handler
+        client2.on('message', function(msg, rinfo){
+            console.log('Client2 Received UDP message:', msg);
+        });
+        
+        // Sending STUN request
+        client1.request(onRequest);
+    })
 });
 
-// Client2: STUN Response event handler
-client2.on('response', function(packet){
-    console.log('Received STUN packet:', packet);
-
-    // Save NAT Address
-    peer.push(packet.attrs[stun.attribute.MAPPED_ADDRESS] || packet.attrs[stun.attribute.XOR_MAPPED_ADDRESS]);
-
-    // Sending UDP message
-    var msg = new Buffer("Hello!");
-    for (var i=0; i<10; i++) {
-        client1.send(msg, 0, msg.length, peer[1].port, peer[1].address);
-        client2.send(msg, 0, msg.length, peer[0].port, peer[0].address);
-    }
-
-    // Client close after 2sec
-    setTimeout(function(){
-        client1.close();
-        client2.close();
-        console.log('done'); 
-    }, 2000);
-});
-
-// Client1: UDP Message event handler
-client1.on('message', function(msg, rinfo){
-    console.log('Received UDP message:', msg);
-});
-
-// Client2: UDP Message event handler
-client2.on('message', function(msg, rinfo){
-    console.log('Received UDP message:', msg);
-});
-
-// Sending STUN request
-client1.request(onRequest);
+var dummy = dgram.createSocket('udp4')
+dummy.bind(1234);
