@@ -4,8 +4,12 @@ var dgram = require('dgram'),
 var peer = [];
 
 // STUN Server (by Google)
-var port = 19302;
-var host = 'stun.l.google.com';
+//var port = 19302;
+//var host = 'stun.l.google.com';
+
+// STUN Server (by PlexRay)
+var port = 3478;
+var host = '2001:470:1f0e:d1d::2';
 
 // Event Handler
 var onRequest = function(){
