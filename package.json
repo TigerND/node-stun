@@ -6,7 +6,7 @@
   "scripts": {
     "test": "$(npm bin)/nodeunit test/client.js"
   },
-  "repository":  {
+  "repository": {
     "type": "git",
     "url": "https://github.com/summerwind/node-stun.git"
   },
